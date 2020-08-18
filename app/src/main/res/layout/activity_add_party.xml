@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="파티 개설"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        />
+
+    <EditText
+        android:layout_width="350dp"
+        android:layout_height="55dp"
+        android:hint="파티 이름"
+        android:background="#ffffff"
+        android:id="@+id/et_partyname"
+        android:paddingStart="20dp"
+        android:layout_marginTop="30dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="350dp"
+            android:layout_height="55dp"
+            android:text="친구 초대"
+            android:textSize="18sp"
+            android:paddingStart="20dp"
+            android:id="@+id/btn_invite"
+            android:gravity="center_vertical"
+            android:background="?android:selectableItemBackground"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@id/rv_friends"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            />
+
+    </LinearLayout>
+
+<!--    TODO Theme를 android.R.style.Theme_Holo_Light_Dialog 로 바꾸기-->
+    <TimePicker
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:background="#ffffff"
+        android:id="@+id/timepicker"
+        android:layout_marginTop="20dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+
+        >
+
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:text="완료"
+            android:id="@+id/btn_access"
+            android:background="@android:color/holo_blue_light"
+
+            />
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:text="취소"
+            android:id="@+id/btn_cancel"
+            android:background="@android:color/darker_gray"
+            android:layout_marginStart="20dp"
+            />
+
+    </LinearLayout>
+</LinearLayout>
