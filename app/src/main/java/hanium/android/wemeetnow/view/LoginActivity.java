@@ -8,7 +8,6 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import hanium.android.wemeetnow.MainActivity;
 import hanium.android.wemeetnow.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -38,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
             case R.id.btn_login:{
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
                 break;
             }
             case R.id.btn_join:{

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,11 +27,11 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Handler handler = new Handler();
-        if (checkFirstLogin()) {
+//        if (checkFirstLogin()) {
             handler.postDelayed(this::goToLogin, 1600);
-        } else {
-            requestLogin(id, pw);
-        }
+//        } else {
+//            requestLogin(id, pw);
+//        }
     }
 
     private boolean checkFirstLogin() {
@@ -43,8 +42,8 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-//        Intent intent = new Intent(this, LoginActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
         finish();
     }
 
