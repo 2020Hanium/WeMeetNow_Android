@@ -1,13 +1,21 @@
 package hanium.android.wemeetnow.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.model.JoinModel;
+import hanium.android.wemeetnow.model.SuccessResponse;
+import hanium.android.wemeetnow.network.RetrofitInstance;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class JoinActivity extends AppCompatActivity {
 
@@ -33,15 +41,50 @@ public class JoinActivity extends AppCompatActivity {
     }
 
     View.OnClickListener onClickListener = view -> {
-        switch (view.getId()){
-            case R.id.j_ac:{
-                finish();
+        switch (view.getId()) {
+            case R.id.j_ac: {
+                if (j_name.getText().length() == 0 || j_id.getText().length() == 0 || j_pw.getText().length() == 0){
+                    Toast.makeText(getApplicationContext(), "빈 칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    sendInfo();
+                }
                 break;
             }
-            case R.id.j_cc:{
+            case R.id.j_cc: {
                 onBackPressed();
                 break;
             }
         }
     };
+
+    private void sendInfo() {
+        RetrofitInstance.getInstance().getService().userJoin(new JoinModel(j_name.getText().toString(), j_id.getText().toString(), j_pw.getText().toString())).enqueue(new Callback<SuccessResponse>() {
+            @Override
+            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
+                if (response.isSuccessful()) {
+                    SuccessResponse successResponse = response.body();
+                    if (successResponse != null) {
+                        int code = successResponse.code;
+                        String message = successResponse.message;
+                        if (code == 200) {
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            Log.d("JoinActivity",  code + " " + message);
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                        Log.d("JoinActivity",  response.code() + " " + response.message());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SuccessResponse> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                Log.d("JoinActivity",  t.getMessage());
+            }
+        });
+    }
 }
