@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.model.LoginModel;
-import hanium.android.wemeetnow.model.LoginResponse;
+import hanium.android.wemeetnow.model.SuccessResponse;
 import hanium.android.wemeetnow.network.RetrofitInstance;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,21 +41,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendInfo() {
-        RetrofitInstance.getInstance().getService().userLogin(new LoginModel(et_id.getText().toString(), et_pw.getText().toString())).enqueue(new Callback<LoginResponse>() {
+        RetrofitInstance.getInstance().getService().userLogin(new LoginModel(et_id.getText().toString(), et_pw.getText().toString())).enqueue(new Callback<SuccessResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
                 if (response.isSuccessful()) {
-                    LoginResponse loginResponse = response.body();
-                    if (loginResponse != null) {
-                        int code = loginResponse.code;
-                        String message = loginResponse.message;
+                    SuccessResponse successResponse = response.body();
+                    if (successResponse != null) {
+                        int code = successResponse.code;
+                        String message = successResponse.message;
                         if (code == 200) {
-                            Log.d("LoginActivity",  loginResponse.userId + "");
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             Log.d("LoginActivity",  code + " " + message);
                         }
                     } else {
@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            public void onFailure(Call<SuccessResponse> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                 Log.d("LoginActivity",  t.getMessage());
             }

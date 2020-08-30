@@ -69,8 +69,9 @@ public class JoinActivity extends AppCompatActivity {
                         String message = successResponse.message;
                         if (code == 200) {
                             finish();
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             Log.d("JoinActivity",  code + " " + message);
                         }
                     } else {
