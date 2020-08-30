@@ -31,7 +31,7 @@
         app:layout_constraintVertical_bias="0.25"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/j_id"
-
+        android:inputType="text"
         />
 
     <EditText
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@+id/j_name"
         android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@id/j_pw"
-
+        android:inputType="text"
         />
 
     <EditText
