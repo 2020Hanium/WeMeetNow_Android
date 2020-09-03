@@ -22,7 +22,7 @@ import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private String id, pw;
+    private String id, pw, name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +42,9 @@ public class SplashActivity extends AppCompatActivity {
     private boolean checkFirstLogin() {
         id = PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null);
         pw = PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.PASSWORD, null);
+        name = PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.NAME, null);
 
-        return id == null || pw == null;
+        return id == null || pw == null || name == null;
     }
 
     private void goToLogin() {
@@ -62,11 +63,12 @@ public class SplashActivity extends AppCompatActivity {
                         int code = successResponse.code;
                         String message = successResponse.message;
                         if (code == 200) {
-                            saveUserInfo(id, pw);
+                            name = message.substring(8, 11);
+                            saveUserInfo();
                             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             Log.d("SplashActivity",  code + " " + message);
@@ -89,9 +91,10 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserInfo(String id, String pw){
+    private void saveUserInfo(){
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.ID, id);
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.PASSWORD, pw);
-        Log.d("SplashActivity", "ID: " + id + ", PASSWORD: " + pw);
+        PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.NAME, name);
+        Log.d("SplashActivity", "ID: " + id + ", PASSWORD: " + pw + ", NAME: " + name);
     }
 }

@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                         int code = successResponse.code;
                         String message = successResponse.message;
                         if (code == 200) {
-                            saveUserInfo(et_id.getText().toString(), et_pw.getText().toString());
+                            saveUserInfo(et_id.getText().toString(), et_pw.getText().toString(), message.substring(8, 11));
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -90,9 +90,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    private void saveUserInfo(String id, String pw){
+    private void saveUserInfo(String id, String pw, String name){
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.ID, id);
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.PASSWORD, pw);
-        Log.d("LoginActivity", "ID: " + id + ", PASSWORD: " + pw);
+        PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.NAME, name);
+        Log.d("LoginActivity", "ID: " + id + ", PASSWORD: " + pw + ", NAME: " + name);
     }
 }

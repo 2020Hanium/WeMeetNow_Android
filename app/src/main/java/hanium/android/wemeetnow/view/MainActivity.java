@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 드로어
         TextView drawer_name = findViewById(R.id.drawer_name);
+        drawer_name.setText(PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.NAME, null));
 
         TextView tv_partyname = findViewById(R.id.tv_partyname);
 
