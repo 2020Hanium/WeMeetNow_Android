@@ -7,12 +7,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -23,6 +26,8 @@ import com.skt.Tmap.TMapView;
 import java.util.List;
 
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.etc.Constant;
+import hanium.android.wemeetnow.util.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize() {
+        // 메인
         drawerLayout = findViewById(R.id.drawer_layout);
 
         AppCompatImageButton btn_menu = findViewById(R.id.btn_menu);
@@ -92,6 +98,24 @@ public class MainActivity extends AppCompatActivity {
 
         AppCompatImageButton btn_addparty = findViewById(R.id.btn_addparty);
         btn_addparty.setOnClickListener(onClickListener);
+
+        // 드로어
+        TextView drawer_name = findViewById(R.id.drawer_name);
+
+        TextView tv_partyname = findViewById(R.id.tv_partyname);
+
+        TextView tv_partyplace = findViewById(R.id.tv_partyplace);
+
+        TextView tv_partytime = findViewById(R.id.tv_partytime);
+
+        Button btn_choice = findViewById(R.id.btn_choice);
+
+        TextView tv_partymember = findViewById(R.id.tv_partymember);
+
+        AppCompatImageButton btn_addfriend = findViewById(R.id.btn_addfriend);
+
+        Button btn_logout = findViewById(R.id.btn_logout);
+        btn_logout.setOnClickListener(onClickListener);
     }
 
     private void setMapView() {
@@ -110,6 +134,13 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.btn_location:{
                 tmapview.setCenterPoint(currentLocation.getLongitude(), currentLocation.getLatitude(), true);
+                break;
+            }
+            case R.id.btn_logout:{
+                PreferenceManager.getInstance().resetSharedPreference(getApplicationContext());
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
                 break;
             }
         }
