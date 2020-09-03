@@ -11,9 +11,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.model.LoginModel;
 import hanium.android.wemeetnow.model.SuccessResponse;
 import hanium.android.wemeetnow.network.RetrofitInstance;
+import hanium.android.wemeetnow.util.PreferenceManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         btn_join.setOnClickListener(onClickListener);
     }
 
-    private void sendInfo() {
+    private void requestLogin() {
         RetrofitInstance.getInstance().getService().userLogin(new LoginModel(et_id.getText().toString(), et_pw.getText().toString())).enqueue(new Callback<SuccessResponse>() {
             @Override
             public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
@@ -50,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                         int code = successResponse.code;
                         String message = successResponse.message;
                         if (code == 200) {
+                            saveUserInfo(et_id.getText().toString(), et_pw.getText().toString(), message.substring(8, 11));
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -76,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
     View.OnClickListener onClickListener = view -> {
         switch (view.getId()){
             case R.id.btn_login:{
-                sendInfo();
+                requestLogin();
                 break;
             }
             case R.id.btn_join:{
@@ -86,4 +89,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void saveUserInfo(String id, String pw, String name){
+        PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.ID, id);
+        PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.PASSWORD, pw);
+        PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.NAME, name);
+        Log.d("LoginActivity", "ID: " + id + ", PASSWORD: " + pw + ", NAME: " + name);
+    }
 }

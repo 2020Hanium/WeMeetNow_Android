@@ -6,7 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         >
 
         <TextView
@@ -29,7 +30,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="0dp"
+        android:layout_weight="5"
         android:orientation="vertical"
         >
 
@@ -167,7 +169,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="330dp"
+        android:layout_height="0dp"
+        android:layout_weight="6"
         android:orientation="vertical"
         >
 
@@ -216,7 +219,8 @@
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="로그아웃"
         android:id="@+id/btn_logout"
         android:background="@android:color/holo_blue_light"
