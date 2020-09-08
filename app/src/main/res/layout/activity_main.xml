@@ -48,7 +48,9 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/btn_menu"
                     android:background="@android:color/transparent"
-                    android:hint="장소, 대중교통, 주소 검색"
+                    android:hint="장소, 주소 검색"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
                     android:paddingStart="10dp" />
 
             </RelativeLayout>
