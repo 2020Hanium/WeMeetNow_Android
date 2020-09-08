@@ -1,10 +1,10 @@
 package hanium.android.wemeetnow.network;
 
+import hanium.android.MyApplication;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
-    private static final String BASE_URL = "http://ec2-3-15-44-226.us-east-2.compute.amazonaws.com:3000";
 
     private static RetrofitInstance instance = null;
 
@@ -21,7 +21,7 @@ public class RetrofitInstance {
 
     public RetrofitService getService() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(MyApplication.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

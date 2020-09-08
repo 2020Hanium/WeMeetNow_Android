@@ -42,7 +42,7 @@
         android:layout_height="25dp"
         android:id="@+id/btn_IDsearch"
         android:src="@drawable/search"
-        android:background="@android:color/transparent"
+        android:background="?selectableItemBackground"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="@id/et_id"
         app:layout_constraintTop_toTopOf="@id/et_id"

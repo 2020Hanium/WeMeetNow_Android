@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,12 +33,16 @@ import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.util.PreferenceManager;
+import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         initialize();
         setMapView();
 
+        MyApplication.socket.on("chosen", onInvitationReceived);
     }
 
     private void getPermission() {
@@ -209,6 +215,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
+    };
+
+    Emitter.Listener onInvitationReceived = args -> {
+        Log.d("socket", "Invitation: " + args[0]);
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Invitation: " + (JSONObject)args[0], Toast.LENGTH_LONG).show());
     };
 
     @Override

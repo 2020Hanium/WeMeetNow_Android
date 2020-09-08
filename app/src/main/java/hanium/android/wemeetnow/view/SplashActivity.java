@@ -32,11 +32,11 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Handler handler = new Handler();
-        if (checkFirstLogin()) {
+//        if (checkFirstLogin()) {
             handler.postDelayed(this::goToLogin, 1600);
-        } else {
-            requestLogin();
-        }
+//        } else {
+//            requestLogin();
+//        }
     }
 
     private boolean checkFirstLogin() {
@@ -53,42 +53,46 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void requestLogin(){
-        RetrofitInstance.getInstance().getService().userLogin(new LoginModel(id, pw)).enqueue(new Callback<SuccessResponse>() {
-            @Override
-            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
-                if (response.isSuccessful()) {
-                    SuccessResponse successResponse = response.body();
-                    if (successResponse != null) {
-                        int code = successResponse.code;
-                        String message = successResponse.message;
-                        if (code == 200) {
-                            name = message.substring(8, 11);
-                            saveUserInfo();
-                            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+//    private void requestLogin(){
+//        RetrofitInstance.getInstance().getService().userLogin(new LoginModel(id, pw)).enqueue(new Callback<SuccessResponse>() {
+//            @Override
+//            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
+//                if (response.isSuccessful()) {
+//                    SuccessResponse successResponse = response.body();
+//                    if (successResponse != null) {
+//                        int code = successResponse.code;
+//                        String message = successResponse.message;
+//                        if (code == 200) {
+//                            name = message.substring(8, 11);
+//                            saveUserInfo();
+//                            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+//                            startActivity(intent);
+//                            finish();
+////                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//                        } else {
 //                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                            Log.d("SplashActivity",  code + " " + message);
-                            goToLogin();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                        Log.d("SplashActivity",  response.code() + " " + response.message());
-                        goToLogin();
-                    }
-                }
-            }
+//                            Log.d("SplashActivity",  code + " " + message);
+//                            goToLogin();
+//                        }
+//                    } else {
+//                        Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+//                        Log.d("SplashActivity",  response.code() + " " + response.message());
+//                        goToLogin();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<SuccessResponse> call, Throwable t) {
+//                Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+//                Log.d("SplashActivity",  t.getMessage());
+//                goToLogin();
+//            }
+//        });
+//    }
 
-            @Override
-            public void onFailure(Call<SuccessResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                Log.d("SplashActivity",  t.getMessage());
-                goToLogin();
-            }
-        });
+    private void requestLogin(){
+
     }
 
     private void saveUserInfo(){
