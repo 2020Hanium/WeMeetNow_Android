@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 
+import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
 
 public class AddFriendActivity extends AppCompatActivity {
@@ -39,10 +40,14 @@ public class AddFriendActivity extends AppCompatActivity {
         btn_cc.setOnClickListener(onClickListener);
     }
 
+    private void searchID() {
+//        MyApplication.socket.emit("add_friend", );
+    }
+
     View.OnClickListener onClickListener = view -> {
         switch (view.getId()){
             case R.id.btn_IDsearch:{
-
+                searchID();
                 break;
             }
             case R.id.btn_ac:{
