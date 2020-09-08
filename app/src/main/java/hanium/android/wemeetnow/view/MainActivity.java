@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tv_partymember = findViewById(R.id.tv_partymember);
 
         AppCompatImageButton btn_addfriend = findViewById(R.id.btn_addfriend);
+        btn_addfriend.setOnClickListener(onClickListener);
 
         Button btn_logout = findViewById(R.id.btn_logout);
         btn_logout.setOnClickListener(onClickListener);
@@ -142,6 +143,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
+                break;
+            }
+            case R.id.btn_addfriend:{
+                Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
+                startActivity(intent);
                 break;
             }
         }
