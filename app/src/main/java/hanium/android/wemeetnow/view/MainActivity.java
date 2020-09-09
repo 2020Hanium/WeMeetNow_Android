@@ -33,6 +33,7 @@ import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -218,8 +219,17 @@ public class MainActivity extends AppCompatActivity {
     };
 
     Emitter.Listener onInvitationReceived = args -> {
-        Log.d("socket", "Invitation: " + args[0]);
-        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Invitation: " + (JSONObject)args[0], Toast.LENGTH_LONG).show());
+
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String senderName = obj.getString("senderName");
+            Log.d("socket", "Invitation: " +senderName);
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Invitation: " + senderName, Toast.LENGTH_LONG).show());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     };
 
     @Override

@@ -10,12 +10,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.model.LoginModel;
 import hanium.android.wemeetnow.model.SuccessResponse;
 import hanium.android.wemeetnow.network.RetrofitInstance;
 import hanium.android.wemeetnow.util.PreferenceManager;
+import io.socket.emitter.Emitter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,11 +37,11 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Handler handler = new Handler();
-//        if (checkFirstLogin()) {
+        if (checkFirstLogin()) {
             handler.postDelayed(this::goToLogin, 1600);
-//        } else {
-//            requestLogin();
-//        }
+        } else {
+            requestLogin();
+        }
     }
 
     private boolean checkFirstLogin() {
@@ -91,9 +96,34 @@ public class SplashActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private void requestLogin(){
+    private void requestLogin() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("userEmail", id);
+            obj.put("userPwd", pw);
 
+            MyApplication.socket.emit("login", obj);
+            MyApplication.socket.on("login_info", onLogin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+    Emitter.Listener onLogin = args -> {
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String name = obj.getString("name");
+            Log.d("socket", "Login: " + name);
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Login: " + name, Toast.LENGTH_SHORT).show());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    };
+
 
     private void saveUserInfo(){
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.ID, id);
