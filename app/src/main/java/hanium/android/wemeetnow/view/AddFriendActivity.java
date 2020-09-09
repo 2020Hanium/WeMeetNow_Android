@@ -88,10 +88,18 @@ public class AddFriendActivity extends AppCompatActivity {
     };
 
     Emitter.Listener onSuccessSearching = args -> {
-        Log.d("socket", "Searching Success: " + (JSONObject)args[0]);
-        runOnUiThread(() -> {
-            tv_name.setText((JSONObject)args[0] + "");
-        });
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String id = obj.getString("id");
+            Log.d("socket", "Searching Success: " + id);
+            runOnUiThread(() -> {
+                tv_name.setText(id + "");
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     };
 
     Emitter.Listener onFailSearching = args -> {

@@ -10,8 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
@@ -65,8 +67,16 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
-        Log.d("socket", "Login: " + (JSONObject)args[0]);
-        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Login: " + (JSONObject)args[0], Toast.LENGTH_SHORT).show());
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String name = obj.getString("name");
+            Log.d("socket", "Login: " + name);
+            saveUserInfo(et_id.getText().toString(), et_pw.getText().toString(), name);
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Login: " + name, Toast.LENGTH_SHORT).show());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     };
 
 //    private void requestLogin() {
