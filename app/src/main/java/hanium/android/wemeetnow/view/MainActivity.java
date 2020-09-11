@@ -1,5 +1,6 @@
 package hanium.android.wemeetnow.view;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
@@ -222,15 +223,38 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject obj = (JSONObject)args[0];
         try {
+            String sender = obj.getString("sender");
             String senderName = obj.getString("senderName");
             Log.d("socket", "Invitation: " +senderName);
-            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Invitation: " + senderName, Toast.LENGTH_LONG).show());
+            runOnUiThread(() -> showAlertDialog(sender, senderName));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
     };
+
+    private void showAlertDialog(String sender, String senderName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("친구 신청").setMessage(senderName + "님에게 친구 신청이 도착했습니다.");
+
+        builder.setPositiveButton("수락", (dialog, id) -> {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("sender", sender);
+                MyApplication.socket.emit("yes_friend", obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+
+        builder.setNegativeButton("거절", (dialog, id) -> {
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     @Override
     public void onBackPressed() {
