@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -294,8 +295,11 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("거절", (dialog, id) -> {
         });
 
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 
     Emitter.Listener onFriendListReceived = args -> {
