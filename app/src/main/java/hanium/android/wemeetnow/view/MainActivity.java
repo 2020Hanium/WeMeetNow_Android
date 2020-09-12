@@ -1,11 +1,14 @@
 package hanium.android.wemeetnow.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -42,6 +45,7 @@ import java.util.List;
 
 import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.adapter.FriendListAdapter;
 import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
@@ -49,6 +53,8 @@ import io.socket.emitter.Emitter;
 public class MainActivity extends AppCompatActivity {
 
     private Location currentLocation;
+    private List<String> friendList = new ArrayList<>();
+    private FriendListAdapter adapter;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
@@ -62,9 +68,13 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
         initialize();
         setMapView();
+        setRecyclerView();
 
         MyApplication.socket.on("chosen", onInvitationReceived);
+        MyApplication.socket.on("friend_list", onFriendListReceived);
     }
+
+
 
     private void getPermission() {
         TedPermission.with(this)
@@ -72,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
                 .setDeniedMessage("[설정] > [권한] 에서 권한을 허용해주세요.")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check();
+    }
+
+    private void setRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.rv_friends);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new FriendListAdapter(friendList);
+        recyclerView.setAdapter(adapter);
     }
 
     PermissionListener permissionlistener = new PermissionListener() {
@@ -102,9 +120,33 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    androidx.drawerlayout.widget.DrawerLayout.DrawerListener drawerListener = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+        }
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {
+            Log.d("socket", "Refresh Friend");
+            MyApplication.socket.emit("refresh_friend");
+        }
+
+        @Override
+        public void onDrawerClosed(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
+    };
+
     private void initialize() {
         // 메인
         drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.addDrawerListener(drawerListener);
 
         AppCompatImageButton btn_menu = findViewById(R.id.btn_menu);
         btn_menu.setOnClickListener(onClickListener);
@@ -255,6 +297,20 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
+    Emitter.Listener onFriendListReceived = args -> {
+
+        Log.d("socket", "Friend List: " + args[0] + "");
+//        JSONObject obj = (JSONObject)args[0];
+//        try {
+//            String sender = obj.getString("sender");
+//            String senderName = obj.getString("senderName");
+//            runOnUiThread(() -> showAlertDialog(sender, senderName));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+    };
 
     @Override
     public void onBackPressed() {

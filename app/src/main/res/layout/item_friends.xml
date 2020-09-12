@@ -9,7 +9,7 @@
         android:text="홍길동"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:id="@+id/rv_friendname"
+        android:id="@+id/tv_friendname"
         android:layout_marginTop="10dp"
         />
 
