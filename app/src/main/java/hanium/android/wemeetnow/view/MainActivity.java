@@ -260,6 +260,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             }
+            case R.id.btn_addparty:{
+                Intent intent = new Intent(MainActivity.this, AddPartyActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
     };
 

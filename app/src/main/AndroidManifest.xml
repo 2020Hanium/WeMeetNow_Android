@@ -26,6 +26,7 @@
         <activity android:name=".view.LoginActivity" />
         <activity android:name=".view.JoinActivity" />
         <activity android:name=".view.AddFriendActivity" />
+        <activity android:name=".view.AddPartyActivity" />
     </application>
 
 </manifest>
