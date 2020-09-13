@@ -38,6 +38,7 @@ import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -286,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject();
             try {
                 obj.put("sender", sender);
+                obj.put("senderName", senderName);
                 MyApplication.socket.emit("yes_friend", obj);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -305,15 +307,16 @@ public class MainActivity extends AppCompatActivity {
     Emitter.Listener onFriendListReceived = args -> {
 
         Log.d("socket", "Friend List: " + args[0] + "");
-//        JSONObject obj = (JSONObject)args[0];
-//        try {
-//            String sender = obj.getString("sender");
-//            String senderName = obj.getString("senderName");
-//            runOnUiThread(() -> showAlertDialog(sender, senderName));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
+        friendList.clear();
+        JSONArray arr = (JSONArray) args[0];
+        for (int i = 0; i < arr.length(); i++) {
+            try {
+                friendList.add(arr.getJSONObject(i).getString("name"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        runOnUiThread(() -> adapter.notifyDataSetChanged());
     };
 
     @Override
