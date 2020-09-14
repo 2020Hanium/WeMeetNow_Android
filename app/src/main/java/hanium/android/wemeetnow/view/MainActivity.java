@@ -72,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
         setMapView();
         setRecyclerView();
 
-        MyApplication.socket.on("chosen", onInvitationReceived);
+        MyApplication.socket.on("chosen", onFriendInvitationReceived);
         MyApplication.socket.on("friend_list", onFriendListReceived);
+        MyApplication.socket.on("invite_party", onPartyInvitationReceived);
+        
     }
 
 
@@ -268,14 +270,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    Emitter.Listener onInvitationReceived = args -> {
+    Emitter.Listener onFriendInvitationReceived = args -> {
 
         JSONObject obj = (JSONObject)args[0];
         try {
             String sender = obj.getString("sender");
             String senderName = obj.getString("senderName");
-            Log.d("socket", "Invitation: " +senderName);
-            runOnUiThread(() -> showAlertDialog(sender, senderName));
+            Log.d("socket", "Friend Invitation: " +senderName);
+            runOnUiThread(() -> showFriendAlertDialog(sender, senderName));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -283,7 +285,20 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-    private void showAlertDialog(String sender, String senderName) {
+    Emitter.Listener onPartyInvitationReceived = args -> {
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String party_name = obj.getString("party_name");
+            String head = obj.getString("head");
+            int totalCount = obj.getInt("total_partyCount");
+            Log.d("socket", "Party Invitation: " + head + ", " + party_name);
+            runOnUiThread(() -> showPartyAlertDialog(party_name, head, totalCount));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
+    private void showFriendAlertDialog(String sender, String senderName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
         builder.setTitle("친구 신청").setMessage(senderName + "님에게 친구 신청이 도착했습니다.");
@@ -300,6 +315,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton("거절", (dialog, id) -> {
+        });
+
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
+
+    private void showPartyAlertDialog(String party_name, String head, int totalCount) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("파티 초대").setMessage(head + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
+
+        builder.setPositiveButton("확인", (dialog, id) -> {
+
         });
 
         if(!((Activity) MainActivity.this).isFinishing())
