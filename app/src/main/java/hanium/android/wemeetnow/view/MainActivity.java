@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("chosen", onFriendInvitationReceived);
         MyApplication.socket.on("friend_list", onFriendListReceived);
         MyApplication.socket.on("invite_party", onPartyInvitationReceived);
-        
+
     }
 
 
@@ -330,7 +330,11 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("파티 초대").setMessage(head + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
 
         builder.setPositiveButton("확인", (dialog, id) -> {
-
+            Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);
+            intent.putExtra("totalCount", totalCount);
+            intent.putExtra("head", head);
+            intent.putExtra("partyName", party_name);
+            startActivity(intent);
         });
 
         if(!((Activity) MainActivity.this).isFinishing())

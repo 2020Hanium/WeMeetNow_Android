@@ -1,5 +1,6 @@
 package hanium.android.wemeetnow.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,8 @@ import java.util.List;
 import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.adapter.FriendsPartyAdapter;
+import hanium.android.wemeetnow.etc.Constant;
+import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
 
 public class AddPartyActivity extends AppCompatActivity implements FriendsPartyAdapter.OnSelectListener {
@@ -163,10 +166,21 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
     };
 
     Emitter.Listener onPartySuccess = args -> {
-        Log.d("socket", "Party Success");
-        finish();
-
-
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            int totalCount = obj.getInt("total_partyCount");
+            Log.d("socket", "Party Success: " + totalCount);
+            runOnUiThread(() -> {
+                Intent intent = new Intent(AddPartyActivity.this, SetMyLocationActivity.class);
+                intent.putExtra("totalCount", totalCount);
+                intent.putExtra("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.NAME, null));
+                intent.putExtra("partyName", et_partyname.getText().toString());
+                startActivity(intent);
+                finish();
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     };
 
 }
