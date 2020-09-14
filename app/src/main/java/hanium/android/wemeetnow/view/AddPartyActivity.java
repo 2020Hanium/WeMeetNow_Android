@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,8 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import hanium.android.MyApplication;
@@ -27,6 +32,7 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
     private boolean isClicked = false;
     private List<String> friendList = new ArrayList<>();
     private List<String> showList = new ArrayList<>();
+    private Calendar calendar;
 
     private FriendsPartyAdapter adapter;
 
@@ -41,6 +47,7 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
 
         initialize();
         setRecyclerView();
+        setTimePicker();
 
         MyApplication.socket.emit("refresh_friend");
         MyApplication.socket.on("friend_list", onFriendListReceived);
@@ -82,6 +89,17 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
         recyclerView.setAdapter(adapter);
     }
 
+    private void setTimePicker() {
+        calendar = Calendar.getInstance();
+        TimePicker picker =  findViewById(R.id.timepicker);
+
+        picker.setHour(calendar.get((Calendar.HOUR_OF_DAY)));
+        picker.setMinute(calendar.get((Calendar.MINUTE)));
+
+        picker.setOnTimeChangedListener((timePicker, hourOfDay, minute) -> calendar.set(calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute, 0));
+    }
+
     View.OnClickListener onClickListener = view -> {
         switch (view.getId()){
             case R.id.btn_invite:{
@@ -89,7 +107,7 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
                 break;
             }
             case R.id.btn_access:{
-
+                sendPartyInfo();
                 break;
             }
             case R.id.btn_cancel:{
@@ -98,6 +116,26 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
             }
         }
     };
+
+    private void sendPartyInfo() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("party_name", et_partyname.getText().toString());
+
+            Date date = new Date(calendar.getTimeInMillis());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Log.d("socket", "date: " + sdf.format(date));
+            obj.put("party_time", sdf.format(date));
+
+            obj.put("members", showList);
+            Log.d("socket", "showList: " + showList.toString());
+
+            MyApplication.socket.emit("open_party", obj);
+            MyApplication.socket.on("ok_partyhead", onPartySuccess);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void clickInvite() {
         if (isClicked) {
@@ -122,6 +160,13 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
             }
         }
         runOnUiThread(() -> adapter.notifyDataSetChanged());
+    };
+
+    Emitter.Listener onPartySuccess = args -> {
+        Log.d("socket", "Party Success");
+        finish();
+
+
     };
 
 }
