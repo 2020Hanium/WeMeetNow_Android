@@ -9,13 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
-import hanium.android.wemeetnow.model.JoinModel;
-import hanium.android.wemeetnow.model.SuccessResponse;
-import hanium.android.wemeetnow.network.RetrofitInstance;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.socket.emitter.Emitter;
 
 public class JoinActivity extends AppCompatActivity {
 
@@ -59,33 +58,32 @@ public class JoinActivity extends AppCompatActivity {
     };
 
     private void sendInfo() {
-        RetrofitInstance.getInstance().getService().userJoin(new JoinModel(j_name.getText().toString(), j_id.getText().toString(), j_pw.getText().toString())).enqueue(new Callback<SuccessResponse>() {
-            @Override
-            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
-                if (response.isSuccessful()) {
-                    SuccessResponse successResponse = response.body();
-                    if (successResponse != null) {
-                        int code = successResponse.code;
-                        String message = successResponse.message;
-                        if (code == 200) {
-                            finish();
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                            Log.d("JoinActivity",  code + " " + message);
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                        Log.d("JoinActivity",  response.code() + " " + response.message());
-                    }
-                }
-            }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("userEmail", j_id.getText().toString());
+            obj.put("userPwd", j_pw.getText().toString());
+            obj.put("userName", j_name.getText().toString());
 
-            @Override
-            public void onFailure(Call<SuccessResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                Log.d("JoinActivity",  t.getMessage());
-            }
-        });
+            MyApplication.socket.emit("add_user", obj);
+            MyApplication.socket.on("success_add_user", onSuccess);
+            MyApplication.socket.on("fail_add_user", onFail);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+    Emitter.Listener onSuccess = args -> {
+        Log.d("socket", "Join Success");
+        runOnUiThread(() -> {
+            finish();
+            Toast.makeText(getApplicationContext(), "회원가입 성공!", Toast.LENGTH_SHORT).show();
+        });
+    };
+
+    Emitter.Listener onFail = args -> {
+        Log.d("socket", "Join Fail");
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "회원가입에 실패했습니다.", Toast.LENGTH_SHORT).show());
+    };
+
 }

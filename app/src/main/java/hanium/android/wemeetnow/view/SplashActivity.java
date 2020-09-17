@@ -104,6 +104,8 @@ public class SplashActivity extends AppCompatActivity {
 
             MyApplication.socket.emit("login", obj);
             MyApplication.socket.on("login_info", onLogin);
+            MyApplication.socket.on("no_id", onNoId);
+            MyApplication.socket.on("wrong_pw", onWrongPw);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -117,13 +119,24 @@ public class SplashActivity extends AppCompatActivity {
         try {
             String name = obj.getString("name");
             Log.d("socket", "Login: " + name);
-            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Login: " + name, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), name + "님 환영합니다!", Toast.LENGTH_SHORT).show());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     };
 
+    Emitter.Listener onNoId = args -> {
+        Log.d("socket", "Login: No Id");
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "존재하지 않는 계정입니다.", Toast.LENGTH_SHORT).show());
+        goToLogin();
+    };
+
+    Emitter.Listener onWrongPw = args -> {
+        Log.d("socket", "Login: Wrong PW");
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "비밀번호가 틀렸습니다!", Toast.LENGTH_SHORT).show());
+        goToLogin();
+    };
 
     private void saveUserInfo(){
         PreferenceManager.getInstance().putSharedPreference(getApplicationContext(), Constant.Preference.ID, id);

@@ -62,7 +62,7 @@ public class AddFriendActivity extends AppCompatActivity {
     private void addFriendToServer() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("besenderEmail", et_id.getText().toString());
+            obj.put("friendEmail", et_id.getText().toString());
             MyApplication.socket.emit("accept_friend", obj);
             finish();
         } catch (JSONException e) {

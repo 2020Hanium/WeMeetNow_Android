@@ -1,12 +1,17 @@
 package hanium.android.wemeetnow.view;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -33,6 +38,7 @@ import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +47,7 @@ import java.util.List;
 
 import hanium.android.MyApplication;
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.adapter.FriendListAdapter;
 import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
@@ -48,6 +55,8 @@ import io.socket.emitter.Emitter;
 public class MainActivity extends AppCompatActivity {
 
     private Location currentLocation;
+    private List<String> friendList = new ArrayList<>();
+    private FriendListAdapter adapter;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
@@ -61,9 +70,15 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
         initialize();
         setMapView();
+        setRecyclerView();
 
-        MyApplication.socket.on("chosen", onInvitationReceived);
+        MyApplication.socket.on("chosen", onFriendInvitationReceived);
+        MyApplication.socket.on("friend_list", onFriendListReceived);
+        MyApplication.socket.on("invite_party", onPartyInvitationReceived);
+
     }
+
+
 
     private void getPermission() {
         TedPermission.with(this)
@@ -71,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
                 .setDeniedMessage("[설정] > [권한] 에서 권한을 허용해주세요.")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check();
+    }
+
+    private void setRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.rv_friends);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new FriendListAdapter(friendList);
+        recyclerView.setAdapter(adapter);
     }
 
     PermissionListener permissionlistener = new PermissionListener() {
@@ -101,9 +124,33 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    androidx.drawerlayout.widget.DrawerLayout.DrawerListener drawerListener = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+        }
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {
+            Log.d("socket", "Refresh Friend");
+            MyApplication.socket.emit("refresh_friend");
+        }
+
+        @Override
+        public void onDrawerClosed(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
+    };
+
     private void initialize() {
         // 메인
         drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.addDrawerListener(drawerListener);
 
         AppCompatImageButton btn_menu = findViewById(R.id.btn_menu);
         btn_menu.setOnClickListener(onClickListener);
@@ -215,21 +262,101 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             }
+            case R.id.btn_addparty:{
+                Intent intent = new Intent(MainActivity.this, AddPartyActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
     };
 
-    Emitter.Listener onInvitationReceived = args -> {
+    Emitter.Listener onFriendInvitationReceived = args -> {
 
         JSONObject obj = (JSONObject)args[0];
         try {
+            String sender = obj.getString("sender");
             String senderName = obj.getString("senderName");
-            Log.d("socket", "Invitation: " +senderName);
-            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Invitation: " + senderName, Toast.LENGTH_LONG).show());
+            Log.d("socket", "Friend Invitation: " +senderName);
+            runOnUiThread(() -> showFriendAlertDialog(sender, senderName));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
+    };
+
+    Emitter.Listener onPartyInvitationReceived = args -> {
+        JSONObject obj = (JSONObject)args[0];
+        try {
+            String party_name = obj.getString("party_name");
+            String head = obj.getString("head");
+            int totalCount = obj.getInt("total_partyCount");
+            Log.d("socket", "Party Invitation: " + head + ", " + party_name);
+            runOnUiThread(() -> showPartyAlertDialog(party_name, head, totalCount));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
+    private void showFriendAlertDialog(String sender, String senderName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("친구 신청").setMessage(senderName + "님에게 친구 신청이 도착했습니다.");
+
+        builder.setPositiveButton("수락", (dialog, id) -> {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("sender", sender);
+                obj.put("senderName", senderName);
+                MyApplication.socket.emit("yes_friend", obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+
+        builder.setNegativeButton("거절", (dialog, id) -> {
+        });
+
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
+
+    private void showPartyAlertDialog(String party_name, String head, int totalCount) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("파티 초대").setMessage(head + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
+
+        builder.setPositiveButton("확인", (dialog, id) -> {
+            Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);
+            intent.putExtra("totalCount", totalCount);
+            intent.putExtra("head", head);
+            intent.putExtra("partyName", party_name);
+            startActivity(intent);
+        });
+
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
+
+    Emitter.Listener onFriendListReceived = args -> {
+
+        Log.d("socket", "Friend List: " + args[0] + "");
+        friendList.clear();
+        JSONArray arr = (JSONArray) args[0];
+        for (int i = 0; i < arr.length(); i++) {
+            try {
+                friendList.add(arr.getJSONObject(i).getString("name"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        runOnUiThread(() -> adapter.notifyDataSetChanged());
     };
 
     @Override
