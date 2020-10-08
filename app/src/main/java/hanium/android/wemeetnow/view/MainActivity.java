@@ -289,10 +289,11 @@ public class MainActivity extends AppCompatActivity {
         JSONObject obj = (JSONObject)args[0];
         try {
             String party_name = obj.getString("party_name");
+            String head = obj.getString("head");
             String head_name = obj.getString("head_name");
             int totalCount = obj.getInt("total_partyCount");
             Log.d("socket", "Party Invitation: " + head_name + ", " + party_name);
-            runOnUiThread(() -> showPartyAlertDialog(party_name, head_name, totalCount));
+            runOnUiThread(() -> showPartyAlertDialog(party_name, head, head_name, totalCount));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -324,10 +325,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showPartyAlertDialog(String party_name, String head, int totalCount) {
+    private void showPartyAlertDialog(String party_name, String head, String head_name, int totalCount) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        builder.setTitle("파티 초대").setMessage(head + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
+        builder.setTitle("파티 초대").setMessage(head_name + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
 
         builder.setPositiveButton("확인", (dialog, id) -> {
             Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);

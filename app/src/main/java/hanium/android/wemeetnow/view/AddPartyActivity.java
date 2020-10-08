@@ -177,7 +177,7 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
             runOnUiThread(() -> {
                 Intent intent = new Intent(AddPartyActivity.this, SetMyLocationActivity.class);
                 intent.putExtra("totalCount", totalCount);
-                intent.putExtra("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.NAME, null));
+                intent.putExtra("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null));
                 intent.putExtra("partyName", et_partyname.getText().toString());
                 startActivity(intent);
                 finish();
