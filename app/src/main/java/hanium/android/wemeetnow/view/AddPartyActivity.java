@@ -130,8 +130,12 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
             Log.d("socket", "date: " + sdf.format(date));
             obj.put("party_time", sdf.format(date));
 
-            obj.put("members", showList);
-            Log.d("socket", "showList: " + showList.toString());
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < showList.size(); i++){
+                jsonArray.put(showList.get(i));
+            }
+            Log.d("socket", "showList: " + jsonArray.toString());
+            obj.put("members", jsonArray);
 
             MyApplication.socket.emit("open_party", obj);
             MyApplication.socket.on("ok_partyhead", onPartySuccess);

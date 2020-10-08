@@ -289,10 +289,10 @@ public class MainActivity extends AppCompatActivity {
         JSONObject obj = (JSONObject)args[0];
         try {
             String party_name = obj.getString("party_name");
-            String head = obj.getString("head");
+            String head_name = obj.getString("head_name");
             int totalCount = obj.getInt("total_partyCount");
-            Log.d("socket", "Party Invitation: " + head + ", " + party_name);
-            runOnUiThread(() -> showPartyAlertDialog(party_name, head, totalCount));
+            Log.d("socket", "Party Invitation: " + head_name + ", " + party_name);
+            runOnUiThread(() -> showPartyAlertDialog(party_name, head_name, totalCount));
         } catch (JSONException e) {
             e.printStackTrace();
         }
