@@ -1,6 +1,7 @@
 package hanium.android.wemeetnow.view;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -56,10 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private Location currentLocation;
     private List<String> friendList = new ArrayList<>();
     private FriendListAdapter adapter;
+    private int totalCount = 0, memberCount = 0;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
     private TMapView tmapview;
+    private TextView tv_partyname, tv_partyplace, tv_partytime, tv_partymember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("chosen", onFriendInvitationReceived);
         MyApplication.socket.on("friend_list", onFriendListReceived);
         MyApplication.socket.on("invite_party", onPartyInvitationReceived);
+        MyApplication.socket.on("member_count", onMemberCountReceived);
 
     }
 
@@ -167,15 +171,15 @@ public class MainActivity extends AppCompatActivity {
         TextView drawer_name = findViewById(R.id.drawer_name);
         drawer_name.setText(PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.NAME, null));
 
-        TextView tv_partyname = findViewById(R.id.tv_partyname);
+        tv_partyname = findViewById(R.id.tv_partyname);
 
-        TextView tv_partyplace = findViewById(R.id.tv_partyplace);
+        tv_partyplace = findViewById(R.id.tv_partyplace);
 
-        TextView tv_partytime = findViewById(R.id.tv_partytime);
+        tv_partytime = findViewById(R.id.tv_partytime);
 
         Button btn_choice = findViewById(R.id.btn_choice);
 
-        TextView tv_partymember = findViewById(R.id.tv_partymember);
+        tv_partymember = findViewById(R.id.tv_partymember);
 
         AppCompatImageButton btn_addfriend = findViewById(R.id.btn_addfriend);
         btn_addfriend.setOnClickListener(onClickListener);
@@ -264,11 +268,29 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.btn_addparty:{
                 Intent intent = new Intent(MainActivity.this, AddPartyActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 100);
                 break;
             }
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100 && resultCode == 100) {
+            String partyName = data.getStringExtra("partyName");
+            totalCount = data.getIntExtra("totalCount", 0);
+
+            tv_partyname.setText(partyName);
+            tv_partymember.setText(memberCount + "/" + totalCount);
+            tv_partytime.setText(data.getStringExtra("time"));
+
+            goToSetMyLocation(totalCount,
+                    PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null),
+                    partyName);
+        }
+    }
 
     Emitter.Listener onFriendInvitationReceived = args -> {
 
@@ -291,9 +313,13 @@ public class MainActivity extends AppCompatActivity {
             String party_name = obj.getString("party_name");
             String head = obj.getString("head");
             String head_name = obj.getString("head_name");
-            int totalCount = obj.getInt("total_partyCount");
+            totalCount = obj.getInt("total_partyCount");
             Log.d("socket", "Party Invitation: " + head_name + ", " + party_name);
-            runOnUiThread(() -> showPartyAlertDialog(party_name, head, head_name, totalCount));
+            runOnUiThread(() -> {
+                showPartyAlertDialog(party_name, head, head_name, totalCount);
+                tv_partyname.setText(party_name);
+                tv_partymember.setText(memberCount + "/" + totalCount);
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -330,19 +356,21 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setTitle("파티 초대").setMessage(head_name + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
 
-        builder.setPositiveButton("확인", (dialog, id) -> {
-            Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);
-            intent.putExtra("totalCount", totalCount);
-            intent.putExtra("head", head);
-            intent.putExtra("partyName", party_name);
-            startActivity(intent);
-        });
+        builder.setPositiveButton("확인", (dialog, id) -> goToSetMyLocation(totalCount, head, party_name));
 
         if(!((Activity) MainActivity.this).isFinishing())
         {
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }
+    }
+
+    private void goToSetMyLocation(int totalCount, String head, String partyName) {
+        Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);
+        intent.putExtra("totalCount", totalCount);
+        intent.putExtra("head", head);
+        intent.putExtra("partyName", partyName);
+        startActivity(intent);
     }
 
     Emitter.Listener onFriendListReceived = args -> {
@@ -358,6 +386,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         runOnUiThread(() -> adapter.notifyDataSetChanged());
+    };
+
+    Emitter.Listener onMemberCountReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Member Count: " + obj);
+
+        String time = "";
+        try {
+            memberCount = obj.getInt("member_count");
+            time = obj.getString("time_info");
+            Log.d("socket", "count: " + memberCount);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String finalTime = time;
+        runOnUiThread(() -> {
+            tv_partymember.setText(memberCount + "/" + totalCount);
+            tv_partytime.setText(finalTime);
+        });
     };
 
     @Override

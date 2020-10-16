@@ -26,8 +26,6 @@ import java.util.List;
 import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.adapter.FriendsPartyAdapter;
-import hanium.android.wemeetnow.etc.Constant;
-import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
 
 public class AddPartyActivity extends AppCompatActivity implements FriendsPartyAdapter.OnSelectListener {
@@ -36,6 +34,7 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
     private List<String> friendList = new ArrayList<>();
     private List<String> showList = new ArrayList<>();
     private Calendar calendar;
+    private String time;
 
     private FriendsPartyAdapter adapter;
 
@@ -127,8 +126,9 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
 
             Date date = new Date(calendar.getTimeInMillis());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Log.d("socket", "date: " + sdf.format(date));
-            obj.put("party_time", sdf.format(date));
+            time = sdf.format(date);
+            Log.d("socket", "date: " + time);
+            obj.put("party_time", time);
 
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < showList.size(); i++){
@@ -175,11 +175,11 @@ public class AddPartyActivity extends AppCompatActivity implements FriendsPartyA
             int totalCount = obj.getInt("total_partyCount");
             Log.d("socket", "Party Success: " + totalCount);
             runOnUiThread(() -> {
-                Intent intent = new Intent(AddPartyActivity.this, SetMyLocationActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra("totalCount", totalCount);
-                intent.putExtra("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null));
                 intent.putExtra("partyName", et_partyname.getText().toString());
-                startActivity(intent);
+                intent.putExtra("time", time);
+                setResult(100, intent);
                 finish();
             });
         } catch (JSONException e) {
