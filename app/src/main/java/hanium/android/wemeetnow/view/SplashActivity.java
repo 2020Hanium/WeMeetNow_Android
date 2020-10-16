@@ -13,17 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import hanium.android.MyApplication;
+import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.etc.Constant;
-import hanium.android.wemeetnow.model.LoginModel;
-import hanium.android.wemeetnow.model.SuccessResponse;
-import hanium.android.wemeetnow.network.RetrofitInstance;
 import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -33,6 +27,8 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        MyApplication.connectSocket();
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

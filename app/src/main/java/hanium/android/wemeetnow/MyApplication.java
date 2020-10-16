@@ -1,4 +1,4 @@
-package hanium.android;
+package hanium.android.wemeetnow;
 
 import android.app.Application;
 import android.util.Log;
@@ -16,20 +16,13 @@ public class MyApplication extends Application {
     public static Socket socket;
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-
-        connectSocket();
-    }
-
-    @Override
     public void onTerminate() {
         super.onTerminate();
 
         disconnectSocket();
     }
 
-    private void connectSocket() {
+    public static void connectSocket() {
         try {
             socket = IO.socket(BASE_URL);
         } catch (URISyntaxException e) {
@@ -40,11 +33,11 @@ public class MyApplication extends Application {
         socket.on(Socket.EVENT_CONNECT, onConnect);
     }
 
-    private void disconnectSocket() {
+    public static void disconnectSocket() {
         socket.disconnect();
-        Log.d("MyApplication", "disconnect");
+        Log.d("socket", "disconnect");
     }
 
-    Emitter.Listener onConnect = args -> Log.d("MyApplication", "connect");
+    static Emitter.Listener onConnect = args -> Log.d("socket", "connect");
 
 }

@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import hanium.android.MyApplication;
+import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.adapter.FriendsPartyAdapter;
 import hanium.android.wemeetnow.etc.Constant;

@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -45,7 +44,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import hanium.android.MyApplication;
+import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
 import hanium.android.wemeetnow.adapter.FriendListAdapter;
 import hanium.android.wemeetnow.etc.Constant;
@@ -251,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.btn_logout:{
+                MyApplication.disconnectSocket();
                 PreferenceManager.getInstance().resetSharedPreference(getApplicationContext());
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);

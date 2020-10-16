@@ -16,7 +16,7 @@ import com.skt.Tmap.TMapView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import hanium.android.MyApplication;
+import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
 import io.socket.emitter.Emitter;
 
