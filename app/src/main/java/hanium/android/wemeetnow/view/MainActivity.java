@@ -54,15 +54,19 @@ import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static boolean isHeader = false;
+
     private Location currentLocation;
     private List<String> friendList = new ArrayList<>();
     private FriendListAdapter adapter;
     private int totalCount = 0, memberCount = 0;
+    private double middleLongitude, middleLatitude;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
     private TMapView tmapview;
     private TextView tv_partyname, tv_partyplace, tv_partytime, tv_partymember;
+    private Button btn_choice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("friend_list", onFriendListReceived);
         MyApplication.socket.on("invite_party", onPartyInvitationReceived);
         MyApplication.socket.on("member_count", onMemberCountReceived);
+        MyApplication.socket.on("location_total", onMiddlePointReceived);
 
     }
 
@@ -177,7 +182,8 @@ public class MainActivity extends AppCompatActivity {
 
         tv_partytime = findViewById(R.id.tv_partytime);
 
-        Button btn_choice = findViewById(R.id.btn_choice);
+        btn_choice = findViewById(R.id.btn_choice);
+        btn_choice.setOnClickListener(onClickListener);
 
         tv_partymember = findViewById(R.id.tv_partymember);
 
@@ -271,6 +277,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 100);
                 break;
             }
+            case R.id.btn_choice:{
+//                Intent intent = new Intent(MainActivity.this, ChoosePlaceActivity.class);
+//                intent.putExtra("head", head);
+//                intent.putExtra("partyName", partyName);
+//                startActivityForResult(intent, 100);
+                break;
+            }
         }
     };
 
@@ -279,6 +292,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 100 && resultCode == 100) {
+            isHeader = true;
+
             String partyName = data.getStringExtra("partyName");
             totalCount = data.getIntExtra("totalCount", 0);
 
@@ -398,6 +413,12 @@ public class MainActivity extends AppCompatActivity {
             memberCount = obj.getInt("member_count");
             time = obj.getString("time_info");
             Log.d("socket", "count: " + memberCount);
+
+            if (isHeader && memberCount == totalCount) {
+                JSONObject send = new JSONObject();
+                send.put("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null));
+                MyApplication.socket.emit("MidPlace", send);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -406,6 +427,24 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             tv_partymember.setText(memberCount + "/" + totalCount);
             tv_partytime.setText(finalTime);
+        });
+    };
+
+    Emitter.Listener onMiddlePointReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Middle Point: " + obj);
+
+        try {
+            middleLongitude = obj.getDouble("long_final");
+            middleLatitude = obj.getDouble("lat_final");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        runOnUiThread(() -> {
+            tv_partymember.setVisibility(View.GONE);
+            btn_choice.setVisibility(View.VISIBLE);
         });
     };
 
