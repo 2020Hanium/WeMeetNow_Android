@@ -28,6 +28,7 @@
         <activity android:name=".view.AddFriendActivity" />
         <activity android:name=".view.AddPartyActivity" />
         <activity android:name=".view.SetMyLocationActivity" />
+        <activity android:name=".view.ChoosePlaceActivity" />
     </application>
 
 </manifest>

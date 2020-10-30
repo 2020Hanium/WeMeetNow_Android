@@ -278,10 +278,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.btn_choice:{
-//                Intent intent = new Intent(MainActivity.this, ChoosePlaceActivity.class);
-//                intent.putExtra("head", head);
-//                intent.putExtra("partyName", partyName);
-//                startActivityForResult(intent, 100);
+                Intent intent = new Intent(MainActivity.this, ChoosePlaceActivity.class);
+                intent.putExtra("longitude", middleLongitude);
+                intent.putExtra("latitude", middleLatitude);
+                startActivityForResult(intent, 100);
                 break;
             }
         }
@@ -291,19 +291,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100 && resultCode == 100) {
-            isHeader = true;
+        if (requestCode == 100) {
+            if (resultCode == 100) {
+                isHeader = true;
 
-            String partyName = data.getStringExtra("partyName");
-            totalCount = data.getIntExtra("totalCount", 0);
+                String partyName = data.getStringExtra("partyName");
+                totalCount = data.getIntExtra("totalCount", 0);
 
-            tv_partyname.setText(partyName);
-            tv_partymember.setText(memberCount + "/" + totalCount);
-            tv_partytime.setText(data.getStringExtra("time"));
+                tv_partyname.setText(partyName);
+                tv_partymember.setText(memberCount + "/" + totalCount);
+                tv_partytime.setText(data.getStringExtra("time"));
 
-            goToSetMyLocation(totalCount,
-                    PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null),
-                    partyName);
+                goToSetMyLocation(totalCount,
+                        PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null),
+                        partyName);
+            }
+            else if (resultCode == 200) {
+
+            }
         }
     }
 
