@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapInfo;
@@ -17,14 +19,20 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import hanium.android.wemeetnow.R;
+import hanium.android.wemeetnow.adapter.PlacesAdapter;
+import hanium.android.wemeetnow.model.Place;
 
 public class ChoosePlaceActivity extends AppCompatActivity {
 
     private double longitude, latitude;
+    private List<Place> list = new ArrayList<>();
 
     private TMapView tmapview;
+
+    private PlacesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +40,7 @@ public class ChoosePlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_place);
 
         initialize();
+        setRecyclerView();
         setMapView();
     }
 
@@ -57,6 +66,14 @@ public class ChoosePlaceActivity extends AppCompatActivity {
         getMiddlePlaces();
     }
 
+    private void setRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.rv_places);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new PlacesAdapter(list);
+        recyclerView.setAdapter(adapter);
+    }
+
     private void getMiddlePlaces() {
         TMapData tmapdata = new TMapData();
         TMapPoint point = new TMapPoint(latitude, longitude);
@@ -71,6 +88,8 @@ public class ChoosePlaceActivity extends AppCompatActivity {
                 TMapMarkerItem markerItem = new TMapMarkerItem();
                 TMapPoint tMapPoint = new TMapPoint(item.getPOIPoint().getLatitude(), item.getPOIPoint().getLongitude());
 
+                list.add(new Place(item.getPOIName(), item.getPOIAddress().replace("null", "")));
+
                 arrays.add(tMapPoint);
 
                 markerItem.setPosition(0.5f, 1.0f);
@@ -81,6 +100,8 @@ public class ChoosePlaceActivity extends AppCompatActivity {
 
                 tmapview.addMarkerItem(item.getPOIID(), markerItem);
             }
+
+            runOnUiThread(() -> adapter.notifyDataSetChanged());
 
             TMapInfo info = tmapview.getDisplayTMapInfo(arrays);
             tmapview.setZoomLevel(info.getTMapZoomLevel());

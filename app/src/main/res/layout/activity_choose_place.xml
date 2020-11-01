@@ -4,12 +4,12 @@
     android:layout_height="match_parent" android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/rl_tmap"
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="wrap_content">
 
 
-        <View
+        <RelativeLayout
+            android:id="@+id/rl_tmap"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             />
