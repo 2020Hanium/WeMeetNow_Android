@@ -3,13 +3,11 @@ package hanium.android.wemeetnow.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapInfo;
@@ -18,37 +16,37 @@ import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
 
+import hanium.android.wemeetnow.MyApplication;
 import hanium.android.wemeetnow.R;
-import hanium.android.wemeetnow.adapter.PlacesAdapter;
-import hanium.android.wemeetnow.model.Place;
+import hanium.android.wemeetnow.etc.Constant;
+import hanium.android.wemeetnow.util.PreferenceManager;
+import io.socket.emitter.Emitter;
 
-public class ChoosePlaceActivity extends AppCompatActivity {
+public class SelectPlaceActivity extends AppCompatActivity {
 
     private double longitude, latitude;
-    private List<Place> list = new ArrayList<>();
 
     private TMapView tmapview;
-
-    private PlacesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_place);
+        setContentView(R.layout.activity_select_location);
 
         initialize();
-        setRecyclerView();
         setMapView();
     }
 
     private void initialize() {
-        Button btn_ac = findViewById(R.id.btn_ac);
-        btn_ac.setOnClickListener(onClickListener);
-        Button btn_cc = findViewById(R.id.btn_cc);
-        btn_cc.setOnClickListener(onClickListener);
+        Button btn_ok = findViewById(R.id.btn_ok);
+        btn_ok.setOnClickListener(view -> getSelectedLocation());
+        TextView tv_title = findViewById(R.id.tv_title);
+        tv_title.setText("약속 장소 선택");
     }
 
     private void setMapView() {
@@ -66,14 +64,6 @@ public class ChoosePlaceActivity extends AppCompatActivity {
         getMiddlePlaces();
     }
 
-    private void setRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.rv_places);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new PlacesAdapter(list);
-        recyclerView.setAdapter(adapter);
-    }
-
     private void getMiddlePlaces() {
         TMapData tmapdata = new TMapData();
         TMapPoint point = new TMapPoint(latitude, longitude);
@@ -84,12 +74,10 @@ public class ChoosePlaceActivity extends AppCompatActivity {
                 TMapPOIItem item = poiItem.get(i);
                 Log.d("POI Name: ", item.getPOIName().toString() + ", " +
                         "Address: " + item.getPOIAddress().replace("null", "") + ", " +
-                        "Point: " + item.getPOIPoint().toString());
+                        "Point: " + item.getPOIPoint().toString() + ", " +
+                        "Id: " + item.getPOIID());
                 TMapMarkerItem markerItem = new TMapMarkerItem();
-                TMapPoint tMapPoint = new TMapPoint(item.getPOIPoint().getLatitude(), item.getPOIPoint().getLongitude());
-
-                list.add(new Place(item.getPOIName(), item.getPOIAddress().replace("null", "")));
-
+                TMapPoint tMapPoint = item.getPOIPoint();
                 arrays.add(tMapPoint);
 
                 markerItem.setPosition(0.5f, 1.0f);
@@ -101,23 +89,30 @@ public class ChoosePlaceActivity extends AppCompatActivity {
                 tmapview.addMarkerItem(item.getPOIID(), markerItem);
             }
 
-            runOnUiThread(() -> adapter.notifyDataSetChanged());
-
             TMapInfo info = tmapview.getDisplayTMapInfo(arrays);
             tmapview.setZoomLevel(info.getTMapZoomLevel());
             tmapview.setCenterPoint(info.getTMapPoint().getLongitude(), info.getTMapPoint().getLatitude());
         });
     }
 
-    View.OnClickListener onClickListener = view -> {
-        switch (view.getId()) {
-            case R.id.btn_ac: {
-                break;
-            }
-            case R.id.btn_cc: {
-                onBackPressed();
-                break;
-            }
+    private void getSelectedLocation() {
+        JSONObject obj = new JSONObject();
+        try {
+            TMapPoint point = tmapview.getCenterPoint();
+            obj.put("place_latitude", point.getLatitude());
+            obj.put("place_longitude", point.getLongitude());
+
+            obj.put("head", PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null));
+
+            MyApplication.socket.emit("select_place", obj);
+            MyApplication.socket.on("success_select_place", onSuccess);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+    }
+
+    Emitter.Listener onSuccess = args -> {
+        Log.d("socket", "Place Success");
+        finish();
     };
 }

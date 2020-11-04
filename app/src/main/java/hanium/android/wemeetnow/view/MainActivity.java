@@ -278,10 +278,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.btn_choice:{
-                Intent intent = new Intent(MainActivity.this, ChoosePlaceActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectPlaceActivity.class);
                 intent.putExtra("longitude", middleLongitude);
                 intent.putExtra("latitude", middleLatitude);
-                startActivityForResult(intent, 100);
+                startActivity(intent);
                 break;
             }
         }
@@ -305,9 +305,6 @@ public class MainActivity extends AppCompatActivity {
                 goToSetMyLocation(totalCount,
                         PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null),
                         partyName);
-            }
-            else if (resultCode == 200) {
-
             }
         }
     }

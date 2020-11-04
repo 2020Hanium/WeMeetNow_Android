@@ -27,7 +27,7 @@ public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsM
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_set_my_location);
+        setContentView(R.layout.activity_select_location);
 
         setMapView();
         setButton();
