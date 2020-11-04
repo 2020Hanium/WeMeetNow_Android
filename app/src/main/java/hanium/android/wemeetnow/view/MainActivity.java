@@ -36,6 +36,7 @@ import com.skt.Tmap.TMapInfo;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import org.json.JSONArray;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> friendList = new ArrayList<>();
     private FriendListAdapter adapter;
     private int totalCount = 0, memberCount = 0;
-    private double middleLongitude, middleLatitude;
+    private double middleLongitude, middleLatitude, startLongitude, startLatitude;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
@@ -306,6 +307,14 @@ public class MainActivity extends AppCompatActivity {
                         PreferenceManager.getInstance().getSharedPreference(getApplicationContext(), Constant.Preference.ID, null),
                         partyName);
             }
+            else if (resultCode == 200) {
+                startLatitude = data.getDoubleExtra("startLatitude", currentLocation.getLatitude());
+                startLatitude = data.getDoubleExtra("startLongitude", currentLocation.getLongitude());
+//                TMapPoint point1 = new TMapPoint(startLatitude, startLongitude);
+//                TMapPoint point2 = new TMapPoint(37.511271, 127.098162);
+//                TMapData tmapdata = new TMapData();
+//                tmapdata.findPathData(point1, point2, polyLine -> runOnUiThread(() -> tmapview.addTMapPath(polyLine)));
+            }
         }
     }
 
@@ -387,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("totalCount", totalCount);
         intent.putExtra("head", head);
         intent.putExtra("partyName", partyName);
-        startActivity(intent);
+        startActivityForResult(intent, 100);
     }
 
     Emitter.Listener onFriendListReceived = args -> {

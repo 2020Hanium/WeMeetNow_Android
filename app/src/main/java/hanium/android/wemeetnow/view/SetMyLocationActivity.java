@@ -22,7 +22,9 @@ import io.socket.emitter.Emitter;
 
 public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
 
+    private TMapGpsManager gps;
     private TMapView tmapview;
+    private TMapPoint centerPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +33,20 @@ public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsM
 
         setMapView();
         setButton();
+        startGps();
 
     }
 
     @Override
     public void onLocationChange(Location location) {
-        TMapGpsManager gps = new TMapGpsManager(this);
         TMapPoint point = gps.getLocation();
-        tmapview.setCenterPoint(point.getLongitude(), point.getLatitude());
+        runOnUiThread(() -> tmapview.setCenterPoint(point.getLongitude(), point.getLatitude()));
+    }
+
+    private void startGps() {
+        gps = new TMapGpsManager(this);
+        gps.setProvider(TMapGpsManager.GPS_PROVIDER);
+        gps.OpenGps();
     }
 
     private void setMapView() {
@@ -57,9 +65,9 @@ public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsM
                 Intent intent = getIntent();
                 obj.put("total_partyCount", intent.getIntExtra("totalCount", 0));
 
-                TMapPoint point = tmapview.getCenterPoint();
-                obj.put("member_placelat", point.getLatitude());
-                obj.put("member_placelong", point.getLongitude());
+                centerPoint = tmapview.getCenterPoint();
+                obj.put("member_placelat", centerPoint.getLatitude());
+                obj.put("member_placelong", centerPoint.getLongitude());
 
                 obj.put("head", intent.getStringExtra("head"));
                 obj.put("party_name", intent.getStringExtra("partyName"));
@@ -74,7 +82,18 @@ public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsM
 
     Emitter.Listener onSuccess = args -> {
         Log.d("socket", "MyLocation Success");
-        finish();
+        runOnUiThread(() -> {
+            Intent intent = new Intent();
+            intent.putExtra("startLongitude", centerPoint.getLongitude());
+            intent.putExtra("startLatitude", centerPoint.getLatitude());
+            setResult(200, intent);
+            finish();
+        });
     };
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gps.CloseGps();
+    }
 }
