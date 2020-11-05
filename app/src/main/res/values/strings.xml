@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">WeMeetNow</string>
     <string name="tmap_app_key">l7xx04ab44c003c448f58cafb6fbfc0f3838</string>
+    <string name="text_car">자동차</string>
+    <string name="text_bus">버스</string>
+    <string name="text_subway">지하철</string>
+    <string name="text_walk">도보</string>
+    <string name="text_etc">기타</string>
 </resources>

@@ -29,6 +29,7 @@
         <activity android:name=".view.AddPartyActivity" />
         <activity android:name=".view.SetMyLocationActivity" />
         <activity android:name=".view.SelectPlaceActivity" />
+        <activity android:name=".view.SelectPathActivity" />
     </application>
 
 </manifest>

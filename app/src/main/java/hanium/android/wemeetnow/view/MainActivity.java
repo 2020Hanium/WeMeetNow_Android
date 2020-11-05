@@ -26,7 +26,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,7 +36,6 @@ import com.skt.Tmap.TMapInfo;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
-import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import org.json.JSONArray;
@@ -315,11 +313,7 @@ public class MainActivity extends AppCompatActivity {
             else if (resultCode == 200) {
                 // 출발 위치 지정
                 startLatitude = data.getDoubleExtra("startLatitude", currentLocation.getLatitude());
-                startLatitude = data.getDoubleExtra("startLongitude", currentLocation.getLongitude());
-//                TMapPoint point1 = new TMapPoint(startLatitude, startLongitude);
-//                TMapPoint point2 = new TMapPoint(37.511271, 127.098162);
-//                TMapData tmapdata = new TMapData();
-//                tmapdata.findPathData(point1, point2, polyLine -> runOnUiThread(() -> tmapview.addTMapPath(polyLine)));
+                startLongitude = data.getDoubleExtra("startLongitude", currentLocation.getLongitude());
             }
             else if (resultCode == 300) {
                 // 약속 장소 선택
@@ -404,10 +398,15 @@ public class MainActivity extends AppCompatActivity {
     private void showPlaceAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        builder.setTitle("경로 선택").setMessage(partyName + " 파티의 장소가 " + placeAddress + "(으)로 정해졌습니다.\n 경로를 선택해주세요.");
+        builder.setTitle("경로 선택").setMessage(partyName + " 파티의 장소가 " + placeAddress + "(으)로 정해졌습니다.\n경로를 선택해주세요.");
 
         builder.setPositiveButton("확인", (dialog, id) -> {
-            Toast.makeText(getApplicationContext(), "경로 선택으로 Go!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, SelectPathActivity.class);
+            intent.putExtra("startLongitude", startLongitude);
+            intent.putExtra("startLatitude", startLatitude);
+            intent.putExtra("placeLongitude", placeLongitude);
+            intent.putExtra("placeLatitude", placeLatitude);
+            startActivity(intent);
         });
 
         if(!((Activity) MainActivity.this).isFinishing())
