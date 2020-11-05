@@ -113,6 +113,7 @@ public class SelectPlaceActivity extends AppCompatActivity {
 
     Emitter.Listener onSuccess = args -> {
         Log.d("socket", "Place Success");
+        setResult(300);
         finish();
     };
 }

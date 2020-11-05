@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -56,12 +57,14 @@ import io.socket.emitter.Emitter;
 public class MainActivity extends AppCompatActivity {
 
     public static boolean isHeader = false;
+    private static final int REQUEST_CODE = 100;
 
     private Location currentLocation;
     private List<String> friendList = new ArrayList<>();
     private FriendListAdapter adapter;
     private int totalCount = 0, memberCount = 0;
-    private double middleLongitude, middleLatitude, startLongitude, startLatitude;
+    private double middleLongitude, middleLatitude, startLongitude, startLatitude, placeLongitude, placeLatitude;
+    private String partyName, placeAddress;
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("invite_party", onPartyInvitationReceived);
         MyApplication.socket.on("member_count", onMemberCountReceived);
         MyApplication.socket.on("location_total", onMiddlePointReceived);
+        MyApplication.socket.on("place_info", onPartyPlaceReceived);
 
     }
 
@@ -275,14 +279,14 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.btn_addparty:{
                 Intent intent = new Intent(MainActivity.this, AddPartyActivity.class);
-                startActivityForResult(intent, 100);
+                startActivityForResult(intent, REQUEST_CODE);
                 break;
             }
             case R.id.btn_choice:{
                 Intent intent = new Intent(MainActivity.this, SelectPlaceActivity.class);
                 intent.putExtra("longitude", middleLongitude);
                 intent.putExtra("latitude", middleLatitude);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE);
                 break;
             }
         }
@@ -292,11 +296,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100) {
+        if (requestCode == REQUEST_CODE) {
             if (resultCode == 100) {
+                // 파티 개설
                 isHeader = true;
 
-                String partyName = data.getStringExtra("partyName");
+                partyName = data.getStringExtra("partyName");
                 totalCount = data.getIntExtra("totalCount", 0);
 
                 tv_partyname.setText(partyName);
@@ -308,12 +313,17 @@ public class MainActivity extends AppCompatActivity {
                         partyName);
             }
             else if (resultCode == 200) {
+                // 출발 위치 지정
                 startLatitude = data.getDoubleExtra("startLatitude", currentLocation.getLatitude());
                 startLatitude = data.getDoubleExtra("startLongitude", currentLocation.getLongitude());
 //                TMapPoint point1 = new TMapPoint(startLatitude, startLongitude);
 //                TMapPoint point2 = new TMapPoint(37.511271, 127.098162);
 //                TMapData tmapdata = new TMapData();
 //                tmapdata.findPathData(point1, point2, polyLine -> runOnUiThread(() -> tmapview.addTMapPath(polyLine)));
+            }
+            else if (resultCode == 300) {
+                // 약속 장소 선택
+                btn_choice.setVisibility(View.GONE);
             }
         }
     }
@@ -336,14 +346,14 @@ public class MainActivity extends AppCompatActivity {
     Emitter.Listener onPartyInvitationReceived = args -> {
         JSONObject obj = (JSONObject)args[0];
         try {
-            String party_name = obj.getString("party_name");
+            partyName = obj.getString("party_name");
             String head = obj.getString("head");
             String head_name = obj.getString("head_name");
             totalCount = obj.getInt("total_partyCount");
-            Log.d("socket", "Party Invitation: " + head_name + ", " + party_name);
+            Log.d("socket", "Party Invitation: " + head_name + ", " + partyName);
             runOnUiThread(() -> {
-                showPartyAlertDialog(party_name, head, head_name, totalCount);
-                tv_partyname.setText(party_name);
+                showPartyAlertDialog(head, head_name, totalCount);
+                tv_partyname.setText(partyName);
                 tv_partymember.setText(memberCount + "/" + totalCount);
             });
         } catch (JSONException e) {
@@ -377,12 +387,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showPartyAlertDialog(String party_name, String head, String head_name, int totalCount) {
+    private void showPartyAlertDialog(String head, String head_name, int totalCount) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        builder.setTitle("파티 초대").setMessage(head_name + "님에게 " + party_name + " 파티 초대가 도착했습니다.");
+        builder.setTitle("파티 초대").setMessage(head_name + "님에게 " + partyName + " 파티 초대가 도착했습니다.");
 
-        builder.setPositiveButton("확인", (dialog, id) -> goToSetMyLocation(totalCount, head, party_name));
+        builder.setPositiveButton("확인", (dialog, id) -> goToSetMyLocation(totalCount, head, partyName));
+
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
+
+    private void showPlaceAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("경로 선택").setMessage(partyName + " 파티의 장소가 " + placeAddress + "(으)로 정해졌습니다.\n 경로를 선택해주세요.");
+
+        builder.setPositiveButton("확인", (dialog, id) -> {
+            Toast.makeText(getApplicationContext(), "경로 선택으로 Go!", Toast.LENGTH_SHORT).show();
+        });
 
         if(!((Activity) MainActivity.this).isFinishing())
         {
@@ -396,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("totalCount", totalCount);
         intent.putExtra("head", head);
         intent.putExtra("partyName", partyName);
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     Emitter.Listener onFriendListReceived = args -> {
@@ -457,6 +483,29 @@ public class MainActivity extends AppCompatActivity {
             tv_partymember.setVisibility(View.GONE);
             btn_choice.setVisibility(View.VISIBLE);
         });
+    };
+
+    Emitter.Listener onPartyPlaceReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Party Place: " + obj);
+
+        try {
+            placeLongitude = obj.getDouble("place_longitude");
+            placeLatitude = obj.getDouble("place_latitude");
+
+            TMapData tmapdata = new TMapData();
+            tmapdata.convertGpsToAddress(placeLatitude, placeLongitude,
+                    strAddress -> {
+                        placeAddress = strAddress;
+                        runOnUiThread(() -> {
+                            tv_partyplace.setText(placeAddress);
+                            showPlaceAlertDialog();
+                        });
+                    });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     };
 
     @Override
