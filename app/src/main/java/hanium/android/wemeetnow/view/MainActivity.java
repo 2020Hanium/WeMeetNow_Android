@@ -15,6 +15,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private int totalCount = 0, memberCount = 0;
     private double middleLongitude, middleLatitude, startLongitude, startLatitude, placeLongitude, placeLatitude;
     private String partyName, placeAddress;
+    private List<TMapMarkerItem> memberMarkerList = new ArrayList<>();
+    private ArrayList<TMapPoint> memberPointList = new ArrayList<>();
 
     private DrawerLayout drawerLayout;
     private EditText et_search;
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("member_count", onMemberCountReceived);
         MyApplication.socket.on("location_total", onMiddlePointReceived);
         MyApplication.socket.on("place_info", onPartyPlaceReceived);
+        MyApplication.socket.on("path_info", onMemberPathReceived);
 
     }
 
@@ -502,6 +507,80 @@ public class MainActivity extends AppCompatActivity {
                             showPlaceAlertDialog();
                         });
                     });
+
+            TMapPoint point = new TMapPoint(placeLatitude, placeLongitude);
+            memberPointList.add(point);
+
+            TMapMarkerItem markerItem = new TMapMarkerItem();
+            String name  = "도착";
+            markerItem.setTMapPoint(point);
+            markerItem.setID(name);
+            markerItem.setName(name);
+            markerItem.setCalloutTitle(name);
+            markerItem.setCanShowCallout(true);
+            markerItem.setAutoCalloutVisible(true);
+
+            tmapview.addMarkerItem(markerItem.getID(), markerItem);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
+    Emitter.Listener onMemberPathReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Member Path: " + obj);
+
+        try {
+            String path = obj.getString("path");
+            String id = obj.getString("myId");
+            String name = obj.getString("myname");
+            double latitude = obj.getDouble("place_latitude");
+            double longitude = obj.getDouble("place_longitude");
+
+            TMapMarkerItem markerItem = new TMapMarkerItem();
+            TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
+
+            Bitmap bitmap = null;
+            switch (path) {
+                case "자동차": {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.car);
+                    break;
+                }
+                case "버스": {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bus);
+                    break;
+                }
+                case "지하철": {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.subway_variant);
+                    break;
+                }
+                case "도보": {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.walk);
+                    break;
+                }
+                case "기타": {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.account_question);
+                    break;
+                }
+            }
+            markerItem.setIcon(bitmap);
+            markerItem.setTMapPoint(tMapPoint);
+            markerItem.setID(id);
+            markerItem.setName(name);
+            markerItem.setCalloutTitle(name);
+            markerItem.setCalloutLeftImage(bitmap);
+            markerItem.setCanShowCallout(true);
+            markerItem.setAutoCalloutVisible(true);
+
+            memberPointList.add(tMapPoint);
+            memberMarkerList.add(markerItem);
+
+            tmapview.addMarkerItem(markerItem.getID(), markerItem);
+
+            TMapInfo info = tmapview.getDisplayTMapInfo(memberPointList);
+            tmapview.setZoomLevel(info.getTMapZoomLevel());
+            tmapview.setCenterPoint(info.getTMapPoint().getLongitude(), info.getTMapPoint().getLatitude());
         } catch (JSONException e) {
             e.printStackTrace();
         }
