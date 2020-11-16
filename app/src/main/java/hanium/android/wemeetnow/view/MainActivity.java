@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -526,6 +529,16 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
     Emitter.Listener onMemberPathReceived = args -> {
         JSONObject obj = (JSONObject) args[0];
 
@@ -544,23 +557,23 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = null;
             switch (path) {
                 case "자동차": {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.car);
+                    bitmap = getBitmapFromVectorDrawable(this, R.drawable.car);
                     break;
                 }
                 case "버스": {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bus);
+                    bitmap = getBitmapFromVectorDrawable(this, R.drawable.bus);
                     break;
                 }
                 case "지하철": {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.subway_variant);
+                    bitmap = getBitmapFromVectorDrawable(this, R.drawable.subway_variant);
                     break;
                 }
                 case "도보": {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.walk);
+                    bitmap = getBitmapFromVectorDrawable(this, R.drawable.walk);
                     break;
                 }
                 case "기타": {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.account_question);
+                    bitmap = getBitmapFromVectorDrawable(this, R.drawable.account_question);
                     break;
                 }
             }
@@ -569,7 +582,6 @@ public class MainActivity extends AppCompatActivity {
             markerItem.setID(id);
             markerItem.setName(name);
             markerItem.setCalloutTitle(name);
-            markerItem.setCalloutLeftImage(bitmap);
             markerItem.setCanShowCallout(true);
             markerItem.setAutoCalloutVisible(true);
 
