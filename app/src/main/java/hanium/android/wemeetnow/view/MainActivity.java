@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -16,7 +15,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -32,11 +30,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapInfo;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
@@ -57,11 +54,12 @@ import hanium.android.wemeetnow.etc.Constant;
 import hanium.android.wemeetnow.util.PreferenceManager;
 import io.socket.emitter.Emitter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
 
-    public static boolean isHeader = false;
+    public static boolean isHeader = false, LOCATION_CHECK_MODE = false;
     private static final int REQUEST_CODE = 100;
 
+    private TMapGpsManager gps;
     private Location currentLocation;
     private List<String> friendList = new ArrayList<>();
     private FriendListAdapter adapter;
@@ -94,31 +92,22 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.socket.on("location_total", onMiddlePointReceived);
         MyApplication.socket.on("place_info", onPartyPlaceReceived);
         MyApplication.socket.on("path_info", onMemberPathReceived);
+        MyApplication.socket.on("nowLocation", onMemberLocationReceived);
 
     }
 
-
-
     private void getPermission() {
-        TedPermission.with(this)
+        TedPermission.with(getApplicationContext())
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("[설정] > [권한] 에서 권한을 허용해주세요.")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check();
     }
 
-    private void setRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.rv_friends);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new FriendListAdapter(friendList);
-        recyclerView.setAdapter(adapter);
-    }
-
     PermissionListener permissionlistener = new PermissionListener() {
         @Override
         public void onPermissionGranted() {
-            getMyLocation();
+            startGps();
         }
 
         @Override
@@ -127,20 +116,41 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void getMyLocation() {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+    private void startGps() {
+        gps = new TMapGpsManager(this);
+        gps.setMinTime(500);
+        gps.setMinDistance(5);
+        gps.setProvider(TMapGpsManager.GPS_PROVIDER);
+        gps.OpenGps();
+    }
+
+    @Override
+    public void onLocationChange(Location location) {
+        Log.d("MainActivity", location.toString());
+        currentLocation = location;
+        tmapview.setLocationPoint(currentLocation.getLongitude(), currentLocation.getLatitude());
+
+        if (LOCATION_CHECK_MODE) {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("nowlat", currentLocation.getLatitude());
+                obj.put("nowlong", currentLocation.getLongitude());
+                MyApplication.socket.emit("RTL", obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        currentLocation = location;
-                        tmapview.setCenterPoint(currentLocation.getLongitude(), currentLocation.getLatitude());
-                        tmapview.setIconVisibility(true);
-                        tmapview.setLocationPoint(currentLocation.getLongitude(), currentLocation.getLatitude());
-                    }
-                });
+        else {
+            tmapview.setCenterPoint(currentLocation.getLongitude(), currentLocation.getLatitude());
+        }
+    }
+
+    private void setRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.rv_friends);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new FriendListAdapter(friendList);
+        recyclerView.setAdapter(adapter);
     }
 
     androidx.drawerlayout.widget.DrawerLayout.DrawerListener drawerListener = new DrawerLayout.DrawerListener() {
@@ -258,6 +268,8 @@ public class MainActivity extends AppCompatActivity {
 
         RelativeLayout rl_tmap = findViewById(R.id.rl_tmap);
         rl_tmap.addView(tmapview);
+
+        tmapview.setIconVisibility(true);
     }
 
     View.OnClickListener onClickListener = view -> {
@@ -540,6 +552,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     Emitter.Listener onMemberPathReceived = args -> {
+        if (!LOCATION_CHECK_MODE) LOCATION_CHECK_MODE = true;
+
         JSONObject obj = (JSONObject) args[0];
 
         Log.d("socket", "Member Path: " + obj);
@@ -598,6 +612,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    Emitter.Listener onMemberLocationReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Member Location: " + obj);
+
+        try {
+            String id = obj.getString("myId");
+            String name = obj.getString("myname");
+            double latitude = obj.getDouble("nowlat");
+            double longitude = obj.getDouble("nowlong");
+
+            for (int i = 0; i < memberMarkerList.size(); i++) {
+                if (memberMarkerList.get(i).getID().equals(id)) {
+                    tmapview.getMarkerItemFromID(id).setTMapPoint(new TMapPoint(latitude, longitude));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -605,5 +640,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gps.CloseGps();
     }
 }
