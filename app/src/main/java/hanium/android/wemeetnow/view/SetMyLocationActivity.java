@@ -45,7 +45,7 @@ public class SetMyLocationActivity extends AppCompatActivity implements TMapGpsM
 
     private void startGps() {
         gps = new TMapGpsManager(this);
-        gps.setProvider(TMapGpsManager.GPS_PROVIDER);
+        gps.setProvider(TMapGpsManager.NETWORK_PROVIDER);
         gps.OpenGps();
     }
 

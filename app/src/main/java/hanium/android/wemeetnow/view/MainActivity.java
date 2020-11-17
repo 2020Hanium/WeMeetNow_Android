@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         gps = new TMapGpsManager(this);
         gps.setMinTime(500);
         gps.setMinDistance(5);
-        gps.setProvider(TMapGpsManager.GPS_PROVIDER);
+        gps.setProvider(TMapGpsManager.NETWORK_PROVIDER);
         gps.OpenGps();
     }
 
