@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         MyApplication.socket.on("place_info", onPartyPlaceReceived);
         MyApplication.socket.on("path_info", onMemberPathReceived);
         MyApplication.socket.on("nowLocation", onMemberLocationReceived);
+        MyApplication.socket.on("arrival", onArrivalCountReceived);
 
     }
 
@@ -436,6 +437,47 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
+    private void showPartyFinishDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("파티 종료").setMessage(partyName + " 파티의 모든 멤버가 도착했습니다.\n파티를 종료합니다.");
+
+        builder.setPositiveButton("확인", (dialog, id) -> {
+            tmapview.removeAllMarkerItem();
+            tmapview.setLocationPoint(currentLocation.getLongitude(), currentLocation.getLatitude());
+
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("name", partyName);
+                MyApplication.socket.emit("party_finish", obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            isHeader = false;
+            LOCATION_CHECK_MODE = false;
+            totalCount = 0;
+            memberCount = 0;
+            middleLongitude = 0;
+            middleLatitude = 0;
+            startLongitude = 0;
+            startLatitude = 0;
+            placeLongitude = 0;
+            placeLatitude = 0;
+            partyName = "";
+            placeAddress = "";
+            tv_partyname.setText(partyName);
+            tv_partyplace.setText(placeAddress);
+            tv_partytime.setText("");
+        });
+
+        if(!((Activity) MainActivity.this).isFinishing())
+        {
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
+
     private void goToSetMyLocation(int totalCount, String head, String partyName) {
         Intent intent = new Intent(MainActivity.this, SetMyLocationActivity.class);
         intent.putExtra("totalCount", totalCount);
@@ -481,6 +523,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         String finalTime = time;
         runOnUiThread(() -> {
+            tv_partymember.setVisibility(View.VISIBLE);
             tv_partymember.setText(memberCount + "/" + totalCount);
             tv_partytime.setText(finalTime);
         });
@@ -518,6 +561,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     strAddress -> {
                         placeAddress = strAddress;
                         runOnUiThread(() -> {
+                            tv_partymember.setVisibility(View.GONE);
                             tv_partyplace.setText(placeAddress);
                             showPlaceAlertDialog();
                         });
@@ -628,6 +672,27 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     tmapview.getMarkerItemFromID(id).setTMapPoint(new TMapPoint(latitude, longitude));
                 }
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
+    Emitter.Listener onArrivalCountReceived = args -> {
+        JSONObject obj = (JSONObject) args[0];
+
+        Log.d("socket", "Arrival Count: " + obj);
+
+        try {
+            int arrivalCount = obj.getInt("arrival_cnt");
+            Log.d("socket", "count: " + arrivalCount);
+
+            runOnUiThread(() -> {
+                tv_partymember.setText(arrivalCount + "/" + totalCount);
+
+                if (arrivalCount == totalCount) {
+                    showPartyFinishDialog();
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
