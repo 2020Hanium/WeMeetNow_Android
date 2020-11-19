@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="300dp"
+    android:orientation="vertical"
+    android:layout_width="280dp"
     android:layout_height="match_parent"
-    android:background="#ffffff">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/drawer_name"
-            android:text="홍길동"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
-            />
-
-    </RelativeLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#6c6c6c"
-        />
+    android:background="#efefef">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="1.1"
+        android:background="#f7961e"
+        android:gravity="center_vertical"
+        android:elevation="10dp"
+
+        >
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="35dp"
+            android:src="@drawable/profile_icon"/>
+
+        <TextView
+            android:id="@+id/drawer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:text="홍길동"
+            android:textSize="15sp"
+            android:textStyle="normal"
+            android:textColor="#FFFFFF"
+            android:fontFamily="@font/scdream5"/>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:layout_marginTop="30dp"
         android:orientation="vertical"
+        android:elevation="10dp"
+        android:background="#FFFFFF"
         >
 
         <TextView
@@ -40,17 +52,19 @@
             android:layout_height="wrap_content"
             android:text="파티"
             android:textSize="20sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="24dp"
+            android:fontFamily="@font/scdream6"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="20dp"
             android:textStyle="bold"
-            android:layout_marginBottom="20dp"
+            android:textColor="#191919"
             />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="32dp"
             android:layout_marginEnd="20dp"
             >
 
@@ -58,17 +72,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이름"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:textStyle="normal"
+                android:textSize="12sp"
+                android:fontFamily="@font/scdream5"
+                android:textColor="#191919"
+
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이름"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="20dp"
                 android:id="@+id/tv_partyname"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                android:fontFamily="@font/scdream4"
+                android:textStyle="normal"
+                android:textColor="#505050"
                 />
 
 
@@ -79,25 +99,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="32dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
             >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="장소"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:textStyle="normal"
+                android:fontFamily="@font/scdream5"
+                android:textColor="#191919"
+                android:textSize="12sp"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="장소"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="20dp"
                 android:id="@+id/tv_partyplace"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                android:fontFamily="@font/scdream4"
+                android:textStyle="normal"
+                android:textColor="#505050"
                 />
 
 
@@ -108,25 +134,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="32dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
             >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="시간"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:textStyle="normal"
+                android:textSize="12sp"
+                android:textColor="#191919"
+                android:fontFamily="@font/scdream5"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="시간"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="20dp"
                 android:id="@+id/tv_partytime"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                android:fontFamily="@font/scdream4"
+                android:textStyle="normal"
+                android:textColor="#505050"
                 />
 
 
@@ -134,24 +166,35 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginTop="20dp"
+            >
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_choice"
                 android:text="장소 선택"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="normal"
                 android:visibility="gone"
+                android:fontFamily="@font/scdream4"
+                android:background="@drawable/button_round1"
+                android:gravity="center"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="1/4"
                 android:id="@+id/tv_partymember"
-                android:textSize="20sp"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                android:textColor="#797979"
                 />
 
         </RelativeLayout>
@@ -160,22 +203,22 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#6c6c6c"
-        />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6"
+        android:layout_weight="4.5"
         android:orientation="vertical"
+        android:elevation="10dp"
+        android:layout_marginTop="30dp"
+        android:background="#FFFFFF"
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             >
 
             <TextView
@@ -183,21 +226,22 @@
                 android:layout_height="wrap_content"
                 android:text="친구"
                 android:textSize="20sp"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="32dp"
                 android:textStyle="bold"
+                android:textColor="#191919"
+                android:fontFamily="@font/scdream6"
                 android:layout_centerVertical="true"
                 />
 
             <androidx.appcompat.widget.AppCompatImageButton
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/plus_circle_outline"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/plus_w_icon"
                 android:background="?android:selectableItemBackground"
                 android:layout_alignParentEnd="true"
                 android:scaleType="fitXY"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="32dp"
                 android:id="@+id/btn_addfriend"
                 />
 
@@ -209,9 +253,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rv_friends"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="20dp"
             />
 
     </LinearLayout>
@@ -219,10 +263,15 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.6"
+        android:layout_marginTop="30dp"
         android:text="로그아웃"
+        android:fontFamily="@font/scdream5"
+        android:textStyle="normal"
+        android:textSize="12sp"
+        android:textColor="#ffffff"
         android:id="@+id/btn_logout"
-        android:background="@android:color/holo_blue_light"
+        android:background="#f78271"
         />
 
 </LinearLayout>

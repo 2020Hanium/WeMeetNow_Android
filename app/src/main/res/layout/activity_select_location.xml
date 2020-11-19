@@ -6,14 +6,16 @@
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
         android:text="출발 위치 지정"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="center_horizontal" />
+        android:textSize="20sp"
+        android:fontFamily="@font/scdream5"
+        android:textColor="#191919"
+        android:textStyle="normal"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:elevation="10dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -29,19 +31,22 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
-            android:src="@android:drawable/ic_menu_mylocation"
-            android:tint="@android:color/holo_blue_light"
+            android:src="@drawable/location_icon"
             android:elevation="10dp"/>
 
         <Button
             android:id="@+id/btn_ok"
             android:layout_width="200dp"
             android:layout_height="50dp"
-            android:background="@android:color/holo_blue_light"
-            android:layout_marginBottom="70dp"
+            android:background="@drawable/button_round1"
+            android:layout_marginBottom="60dp"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
             android:text="확인"
+            android:fontFamily="@font/scdream5"
+            android:textSize="15sp"
+            android:textStyle="normal"
+            android:textColor="#FFFFFF"
             android:elevation="10dp"/>
 
     </RelativeLayout>

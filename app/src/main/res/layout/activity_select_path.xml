@@ -5,12 +5,18 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="경로 선택"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#FFFFFF"
+        android:text="경로 추천"
+        android:textSize="20sp"
+        android:textStyle="normal"
+        android:fontFamily="@font/scdream5"
+        android:textColor="#191919"
+        android:paddingTop="15dp"
+        android:gravity="center"
+        android:elevation="10dp"
+        />
 
     <RelativeLayout
         android:id="@+id/rl_tmap"
@@ -46,13 +52,19 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="40dp"
                     android:layoutDirection="rtl"
-                    android:text="@string/text_car"
-                    android:textSize="30sp" />
+                    android:text="자동차"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:fontFamily="@font/scdream5"
+                    android:textColor="#505050"
+                    android:drawableLeft="@drawable/car_icon"
+                    android:drawablePadding="10dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#6c6c6c" />
+                    android:background="#afafaf"
+                    android:layout_marginTop="5dp"/>
 
                 <RadioButton
                     android:id="@+id/rb_bus"
@@ -61,13 +73,19 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="40dp"
                     android:layoutDirection="rtl"
-                    android:text="@string/text_bus"
-                    android:textSize="30sp" />
+                    android:text="버스"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:fontFamily="@font/scdream5"
+                    android:textColor="#505050"
+                    android:drawableLeft="@drawable/bus_icon"
+                    android:drawablePadding="10dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#6c6c6c" />
+                    android:background="#afafaf"
+                    android:layout_marginTop="5dp"/>
 
                 <RadioButton
                     android:id="@+id/rb_subway"
@@ -76,13 +94,19 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="40dp"
                     android:layoutDirection="rtl"
-                    android:text="@string/text_subway"
-                    android:textSize="30sp" />
+                    android:text="지하철"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:fontFamily="@font/scdream5"
+                    android:textColor="#505050"
+                    android:drawableLeft="@drawable/subway_icon"
+                    android:drawablePadding="10dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#6c6c6c" />
+                    android:background="#afafaf"
+                    android:layout_marginTop="5dp"/>
 
                 <RadioButton
                     android:id="@+id/rb_walk"
@@ -91,13 +115,19 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="40dp"
                     android:layoutDirection="rtl"
-                    android:text="@string/text_walk"
-                    android:textSize="30sp" />
+                    android:text="도보"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:fontFamily="@font/scdream5"
+                    android:textColor="#505050"
+                    android:drawableLeft="@drawable/dobo_icon"
+                    android:drawablePadding="10dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#6c6c6c" />
+                    android:background="#afafaf"
+                    android:layout_marginTop="5dp"/>
 
                 <RadioButton
                     android:id="@+id/rb_etc"
@@ -106,8 +136,12 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="40dp"
                     android:layoutDirection="rtl"
-                    android:text="@string/text_etc"
-                    android:textSize="30sp" />
+                    android:text="기타"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#505050"
+                    android:drawableLeft="@drawable/question_icon"
+                    android:drawablePadding="10dp"/>
 
             </RadioGroup>
 
@@ -117,20 +151,31 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn_ac"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/holo_blue_light"
-                    android:text="완료" />
-
-                <Button
                     android:id="@+id/btn_cc"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_weight="1"
-                    android:background="@android:color/darker_gray"
-                    android:text="취소" />
+                    android:text="취소"
+                    android:fontFamily="@font/scdream5"
+                    android:textStyle="normal"
+                    android:textSize="15sp"
+                    android:textColor="#FFFFFF"
+                    android:background="#afafaf" />
+
+                <Button
+                    android:id="@+id/btn_ac"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="#f7961e"
+                    android:text="완료"
+                    android:fontFamily="@font/scdream5"
+                    android:textStyle="normal"
+                    android:textSize="15sp"
+                    android:textColor="#FFFFFF"
+                    />
+
+
 
             </LinearLayout>
 

@@ -7,9 +7,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="홍길동"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textStyle="normal"
         android:id="@+id/tv_friendname"
+        android:fontFamily="@font/scdream4"
+        android:textColor="#505050"
         android:layout_marginTop="10dp"
         />
 

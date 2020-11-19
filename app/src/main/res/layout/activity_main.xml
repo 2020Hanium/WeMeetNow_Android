@@ -18,14 +18,10 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/card"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="30dp"
+            android:layout_height="80dp"
+            android:background="#FFFFFF"
             app:cardCornerRadius="6dp"
-            app:cardElevation="10dp"
-            app:layout_constraintTop_toTopOf="parent" >
+            app:cardElevation="30dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -33,25 +29,32 @@
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/btn_menu"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="10dp"
-                    android:background="@android:color/transparent"
+                    android:background="#FFFFFF"
                     android:scaleType="fitXY"
-                    android:src="@drawable/menu" />
+                    android:src="@drawable/menu_icon" />
 
                 <EditText
                     android:id="@+id/et_search"
-                    android:layout_width="330dp"
-                    android:layout_height="50dp"
+                    android:layout_width="290dp"
+                    android:layout_height="40dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
                     android:layout_toEndOf="@+id/btn_menu"
-                    android:background="@android:color/transparent"
+                    android:background="@drawable/rounded_edittext"
                     android:hint="장소, 주소 검색"
+                    android:fontFamily="@font/scdream4"
+                    android:textSize="10sp"
+                    android:textStyle="normal"
+                    android:textColor="#797979"
                     android:imeOptions="actionSearch"
-                    android:singleLine="true"
-                    android:paddingStart="10dp" />
+                    android:paddingStart="20dp"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:drawablePadding="20dp"
+                    android:singleLine="true" />
 
             </RelativeLayout>
 
@@ -59,9 +62,9 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_location"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_location"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/location_icon"
             android:scaleType="fitXY"
             android:background="?selectableItemBackground"
             android:layout_marginStart="30dp"
@@ -71,22 +74,22 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/btn_addparty"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:background="@android:color/transparent"
-        android:scaleType="fitXY"
-        android:src="@drawable/plus_circle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            android:id="@+id/btn_addparty"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/plus_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         layout="@layout/drawer"
-        android:layout_width="wrap_content"
+        android:layout_width="310dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"/>
 
